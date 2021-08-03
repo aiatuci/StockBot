@@ -1,2 +1,3 @@
+stockbotenv
 data/**
 !data/get_datasets.sh
