@@ -1,3 +1,6 @@
 stockbotenv
 data/**
 !data/get_datasets.sh
+
+**.pyc
+**/__pycache__
