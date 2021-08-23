@@ -33,7 +33,7 @@ class HSMD(Dataset):
         dataset_dir: str,
         stocks: List[str],
         window_size: Optional[int] = DAYS_IN_WEEK,
-        ignore_columns: Optional[List[str]] = []
+        columns: Optional[List[str]] = ["##ALL##"],
     ):
         """Load the Huge Stock Market Dataset.
 
@@ -41,7 +41,7 @@ class HSMD(Dataset):
             dataset_dir (str): Root directory of the downloaded dataset.
             stocks ([str]): Stock exchange tickers for the series of data to load.
             window_size (int): Days of data in each sliding window.
-            ignore_columns ([str]): Columns to exclude from the DataFrame for each stock.
+            columns ([str]): Columns to include from the DataFrame for each stock.
         """
         super(HSMD).__init__(HSMD, self)
         if not os.path.exists(dataset_dir) or not os.path.isdir(dataset_dir):
@@ -58,9 +58,10 @@ class HSMD(Dataset):
 
         date_parser = lambda d: datetime.strptime(d, self.DATE_FMT)
         raw_df = pd.read_csv(stock_file, index_col=0, parse_dates=True, date_parser=date_parser)
-        if ignore_columns:
-            raw_df = raw_df.drop(ignore_columns, axis=1)
+        if "##ALL##" not in columns:
+            raw_df = raw_df[columns]
         self._df = raw_df
+        self.columns = self._df.columns
 
     def __len__(self):
         """Get the length of the loaded series."""
