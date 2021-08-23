@@ -3,3 +3,4 @@ numpy>=1.20.1
 pandas>=1.2.3
 statsmodels>=0.12.2
 torch==1.8.0
+yapf>=0.30.0

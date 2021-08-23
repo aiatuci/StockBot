@@ -74,3 +74,13 @@ pip3 install --user kaggle
 
 sh ./data/get_datasets.sh
 ```
+
+## Contributing
+
+**General guidelines:**
+
+* Work off of your own branch to facilitate concurrent contributions.
+* You can not commit to `main` directly, as branch restrictions are in place.
+* Use appropriate git commit messages.
+* Run `python3 -m yapf --style='{based_on_style: facebook, column_limit: 120}' src/**.py` prior to each 
+commit. This will enforce a uniform code style across the code base.

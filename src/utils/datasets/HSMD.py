@@ -5,7 +5,7 @@
 from datetime import datetime
 import math
 import os
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -33,7 +33,8 @@ class HSMD(Dataset):
         dataset_dir: str,
         stocks: List[str],
         window_size: Optional[int] = DAYS_IN_WEEK,
-        columns: Optional[List[str]] = ["##ALL##"],
+        columns: Optional[List[str]] = None,
+        transform: Optional[Callable] = None
     ):
         """Load the Huge Stock Market Dataset.
 
@@ -48,6 +49,7 @@ class HSMD(Dataset):
             raise ValueError(f"Dataset directory {dataset_dir} does not exist.")
         self._dataset_dir = dataset_dir
         self._window_size = window_size
+        self._transform = transform
 
         # TODO: Add support for loading multiple stocks simultaneously
         assert len(stocks) == 1, f"HSMD currently only supports a single stock at a time."
@@ -58,7 +60,7 @@ class HSMD(Dataset):
 
         date_parser = lambda d: datetime.strptime(d, self.DATE_FMT)
         raw_df = pd.read_csv(stock_file, index_col=0, parse_dates=True, date_parser=date_parser)
-        if "##ALL##" not in columns:
+        if columns:
             raw_df = raw_df[columns]
         self._df = raw_df
         self.columns = self._df.columns
@@ -69,7 +71,10 @@ class HSMD(Dataset):
 
     def __getitem__(self, idx):
         """Get a single data point from the loaded series."""
-        return self._df.iloc[idx:idx + self._window_size, :].values
+        data = self._df.iloc[idx:idx + self._window_size, :].values
+        if self._transform:
+            data = self._transform(data)
+        return data
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(\'{self._dataset_dir}\', {self._stocks}, window_size={self._window_size})"
